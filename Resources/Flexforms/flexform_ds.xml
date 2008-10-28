@@ -1,14 +1,10 @@
 <T3DataStructure>
 	<meta>
 		<langDisable>1</langDisable>
+		<langChildren>0</langChildren>
 	</meta>
-	<sheets>
-		<sDEF>
 		  <ROOT>
-			<TCEforms>
-				<sheetTitle>LLL:EXT:thebridge/Resources/Language/locallang.xml:tt_content.pi_flexform.sheet_dispatch</sheetTitle>
-			</TCEforms>
-			<type></type>
+			<type>array</type>
 			<el>
 			<plugin>
 				<TCEforms>
@@ -21,6 +17,4 @@
 			</plugin>
 			</el>
 		  </ROOT>
-		</sDEF>
-	</sheets>
 </T3DataStructure>

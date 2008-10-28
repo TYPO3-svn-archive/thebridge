@@ -45,54 +45,49 @@ class tx_thebridge_dispatcher {
 	 * @return string The content rendered by FLOW3
 	 * @author Jochen Rau <jochen.rau@typoplanet.de>
 	 **/
-	public function dispatch($input, $setup) {
+	public function dispatch($content, $setup) {
 		$extConfArray = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['thebridge']);
 		require_once(realpath(PATH_site . '../') . '/' . $extConfArray['pathToFlow3']);
 
-		// TODO select a plugin via flexform configuration
-		// if (!is_array($this->cObj->data['pi_flexform']) && $this->cObj->data['pi_flexform'])	{
-		// 	$this->cObj->data['pi_flexform'] = t3lib_div::xml2array($this->cObj->data['pi_flexform']);
-		// 	if (!is_array($this->cObj->data['pi_flexform'])) $this->cObj->data['pi_flexform']=array();
-		// }
-		// $plugin = $this->cObj->data['pi_flexform']['data']['sDEF']['lDEF']['plugin']['vDEF'];
-// debug($setup);
-		if (isset($this->cObj->data['list_type'])) $plugin = $this->cObj->data['select_key'];
-		if (isset($setup['plugins.'][$plugin . '.']['controller'])) $controllerName = $setup['plugins.'][$plugin]['controller'];
-		if (isset($setup['plugins.'][$plugin . '.']['action'])) $action = $setup['plugins.'][$plugin]['action'];
-		// debug($plugin);
 		if ($GLOBALS['FLOW3'] instanceof F3::FLOW3) {
 			$this->framework = $GLOBALS['FLOW3'];
 		} else {
 			$context = isset($setup['context']) ? $setup['context'] : NULL;				
+			// TODO To backup the environment was necessary after rev#1384 of FLOW3. This may break if a package accesses a SuperGlobalReplacement.
+			$environment = array();
+			$environment['GET'] = $_GET;
+			$environment['POST'] = $_POST;
+			$environment['SERVER'] = $_SERVER;
 			$this->framework = new F3::FLOW3($context);
 			$this->framework->initialize();
 			$GLOBALS['FLOW3'] = $this->framework;
+			$_GET = $environment['GET'];
+			$_POST = $environment['POST'];
+			$_SERVER = $environment['SERVER'];
 		}
 		if (!$this->framework instanceof F3::FLOW3) throw new Exception('FLOW3 could not be initialized. Maybe you have to set the correct path in the Extension Manager first. The current path (relative to your web pages root folder) is "' . $extConfArray['pathToFlow3'] . '"');
 
-		if (isset($GP['tx_thebridge[controller]'])) {
-			$controllerName = $GP['tx_thebridge[controller]'];
-		} elseif (isset($setup['defaultControllerName'])) {
-			$controllerName = $setup['defaultControllerName'];
-		} else {
-			$controllerName = NULL;
-		}
-		// debug($controllerName);
-		
-		if (isset($GP['tx_thebridge[action]'])) {
-			$action = $GP['tx_thebridge[action]'];
-		} elseif (isset($setup['defaultAction'])) {
-			$action = $setup['defaultAction'];
-		} else {
-			$action = NULL;
-		}
-		// debug($action);
 
 		$this->componentFactory = $this->framework->getComponentManager()->getComponentFactory();		
 		$request = $this->componentFactory->getComponent('F3::FLOW3::MVC::Web::RequestBuilder')->build();
-		$request->setArgument('input', $input);
-		if ($controllerName != NULL) $request->setControllerName($controllerName);
-		if ($action != NULL) $request->setControlleraction($action);
+		$request->setArgument('content', $content);
+		if (!$GLOBALS['TSFE']->siteScript || substr($GLOBALS['TSFE']->siteScript, 0, 9) == 'index.php' || substr($GLOBALS['TSFE']->siteScript, 0, 1) == '?') {
+			if (!is_array($this->cObj->data['pi_flexform']) && $this->cObj->data['pi_flexform'])	{
+				$this->cObj->data['pi_flexform'] = t3lib_div::xml2array($this->cObj->data['pi_flexform']);
+				if (!is_array($this->cObj->data['pi_flexform'])) $this->cObj->data['pi_flexform'] = array();
+			}
+			$plugin = $this->cObj->data['pi_flexform']['data']['sDEF']['lDEF']['plugin']['vDEF'];
+			$controllerComponentNamePattern = isset($setup['plugins.'][$plugin . '.']['controllerComponentNamePattern']) ? $setup['plugins.'][$plugin . '.']['controllerComponentNamePattern'] : NULL;
+			$packageKey = isset($setup['plugins.'][$plugin . '.']['package']) ? $setup['plugins.'][$plugin . '.']['package'] : NULL;
+			$controllerName = isset($setup['plugins.'][$plugin . '.']['controller']) ? $setup['plugins.'][$plugin . '.']['controller'] : NULL;
+			$actionName = isset($setup['plugins.'][$plugin . '.']['action']) ? $setup['plugins.'][$plugin . '.']['action'] : NULL;
+			if ($controllerComponentNamePattern !== NULL) $request->setControllerComponentNamePattern($controllerComponentNamePattern);
+			if ($packageKey !== NULL && $controllerName !== NULL) {
+				$request->setControllerPackageKey($packageKey);
+				$request->setControllerName($controllerName);
+			}
+			if ($actionName !== NULL) $request->setControllerActionName($actionName);
+		}
 		$router = $this->componentFactory->getComponent('F3::FLOW3::MVC::Web::Routing::Router');
 		$router->route($request);
 		

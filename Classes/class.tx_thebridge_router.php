@@ -33,13 +33,12 @@ class tx_thebridge_router {
 	 **/
 	public function decodeRoute($params) {
 		$pObj = &$params['pObj'];
-		
 		if ($pObj->siteScript && substr($pObj->siteScript, 0, 9) != 'index.php' && substr($pObj->siteScript, 0, 1) != '?') {
 			$extConfArray = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['thebridge']);
 			if ( $extConfArray['pathToPluginsSetup'] != '') {
 				$pathToPluginsSetup = $extConfArray['pathToPluginsSetup'];
 			} else {
-				$pathToPluginsSetup = t3lib_extMgm::extPath('thebridge') . 'Configuration/Plugins.ts';
+				$pathToPluginsSetup = t3lib_extMgm::extPath('thebridge') . 'Configuration/Setup/setup.txt';
 			}
 			$rawSetup = t3lib_div::getURL($pathToPluginsSetup);
 			$TSObj = t3lib_div::makeInstance('t3lib_TSparser');
@@ -51,7 +50,6 @@ class tx_thebridge_router {
 						foreach ($setup['patterns.'] as $pattern) {
 							if (preg_match('#' . $pattern . '#i', $pObj->siteScript) > 0) {
 								$pObj->id = $setup['pid'];
-								$pObj->type = isset($setup['type']) ? $setup['type'] : NULL;
 								$matched = TRUE;
 								break;
 							}
@@ -61,6 +59,7 @@ class tx_thebridge_router {
 				}
 			}
 			// TODO Implement 'best guess' if nothing is found by reading tt_content table
+			$pObj->type = isset($TSObj->setup['plugin.']['tx_thebridge.']['type']) ? $TSObj->setup['plugin.']['tx_thebridge.']['type'] : NULL;
 		}
 	}
 }	

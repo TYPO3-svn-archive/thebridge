@@ -1,7 +1,27 @@
 includeLibs.tx_thebridge = EXT:thebridge/Classes/class.tx_thebridge_dispatcher.php
 plugin.tx_thebridge {
 	userFunc = tx_thebridge_dispatcher->dispatch
-	context = Production 
+	context = Development
+	# set type to 1 if you use old style frames
+	type = 1
+	plugins {
+		# example configuration for the FLOW3 Blog Package
+		blog_list {
+			label = FLOW3 Blog
+			controllerComponentNamePattern = F3::@package::Controller::@controllerController
+			package = Blog
+			controller = Posts
+			action = index
+			# This should be the PID of the page the appropriate plugin resides
+			pid = 14
+			patterns {
+				10 = posts\.html\?tag\=
+				20 = posts/.*?\.html$
+				30 = posts\.html$
+				40 = comments\/create
+			}
+		}
+	}
 }
 tt_content.list.20.thebridge = USER
 tt_content.list.20.thebridge < plugin.tx_thebridge

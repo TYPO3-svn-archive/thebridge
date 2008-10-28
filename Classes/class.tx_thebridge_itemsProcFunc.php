@@ -28,7 +28,7 @@ class tx_thebridge_itemsProcFunc {
 		if ( $extConfArray['pathToPluginsSetup'] != '') {
 			$pathToPluginsSetup = $extConfArray['pathToPluginsSetup'];
 		} else {
-			$pathToPluginsSetup = t3lib_extMgm::extPath('thebridge') . 'Configuration/Plugins.ts';
+			$pathToPluginsSetup = t3lib_extMgm::extPath('thebridge') . 'Configuration/Setup/setup.txt';
 		}
 		$rawSetup = t3lib_div::getURL($pathToPluginsSetup);
 		$TSObj = t3lib_div::makeInstance('t3lib_TSparser');
@@ -38,7 +38,6 @@ class tx_thebridge_itemsProcFunc {
 				$config['items'][] = array($setup['label'], substr($plugin,0,-1));
 			}
 		}
-		// $config['items']= array(array( 'FLOW3 Blog (list view)','blog_list'));
 		return $config['items'];
 	}
 }

@@ -6,11 +6,9 @@
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
-			<label index="tt_content.pi_flexform.sheet_dispatch">FLOW3</label>
 			<label index="tt_content.pi_flexform.select_plugin">Select an available FLOW3 plugin</label>
 		</languageKey>
 		<languageKey index="de" type="array">
-			<label index="tt_content.pi_flexform.sheet_dispatch">FLOW3</label>
 			<label index="tt_content.pi_flexform.select_plugin">Wählen Sie das gewünschte FLOW3-Plugin aus</label>
 		</languageKey>
 	</data>
