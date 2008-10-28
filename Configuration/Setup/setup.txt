@@ -1,0 +1,7 @@
+includeLibs.tx_thebridge = EXT:thebridge/Classes/class.tx_thebridge_dispatcher.php
+plugin.tx_thebridge {
+	userFunc = tx_thebridge_dispatcher->dispatch
+	context = Production 
+}
+tt_content.list.20.thebridge = USER
+tt_content.list.20.thebridge < plugin.tx_thebridge

@@ -1,0 +1,26 @@
+<T3DataStructure>
+	<meta>
+		<langDisable>1</langDisable>
+	</meta>
+	<sheets>
+		<sDEF>
+		  <ROOT>
+			<TCEforms>
+				<sheetTitle>LLL:EXT:thebridge/Resources/Language/locallang.xml:tt_content.pi_flexform.sheet_dispatch</sheetTitle>
+			</TCEforms>
+			<type></type>
+			<el>
+			<plugin>
+				<TCEforms>
+					<label>LLL:EXT:thebridge/Resources/Language/locallang.xml:tt_content.pi_flexform.select_plugin</label>
+					<config>
+						<type>select</type>
+						<itemsProcFunc>tx_thebridge_itemsProcFunc->user_getAvailabePlugins</itemsProcFunc>
+					</config>
+				</TCEforms>
+			</plugin>
+			</el>
+		  </ROOT>
+		</sDEF>
+	</sheets>
+</T3DataStructure>

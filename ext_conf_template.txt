@@ -1,0 +1,6 @@
+
+	# cat=basic//10; type=string; label=Path to FLOW3: The Path to the file F3_FLOW3.php relative to the web document root (including the filename).
+	pathToFlow3 = typo3v5/Packages/FLOW3/Classes/F3_FLOW3.php
+
+	# cat=basic//20; type=string; label=Path to Plugins-Setup: The Path and filename of the file containing the TS Setup for the Plugins representing a package of FLOW3 relative to the TYPO3 installation root. If not set the file "EXT:thebridge/Configuration/Plugins.ts" is taken.
+	pathToPluginsSetup = 
