@@ -58,7 +58,7 @@ class tx_thebridge_router {
 					if ($matched) break;
 				}
 			}
-			// TODO Implement 'best guess' if nothing is found by reading tt_content table
+			// TODO Implement 'best guess'  by quering tt_content table if nothing is found
 			$pObj->type = isset($TSObj->setup['plugin.']['tx_thebridge.']['type']) ? $TSObj->setup['plugin.']['tx_thebridge.']['type'] : NULL;
 		}
 	}

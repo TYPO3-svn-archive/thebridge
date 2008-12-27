@@ -12,11 +12,11 @@
 
 $EM_CONF[$_EXTKEY] = array(
 	'title' => 'A bridge to FLOW3',
-	'description' => 'Write your Package for FLOW3 now! This Extension requires a running FLOW3 and at least PHP 5.3alpha01',
+	'description' => 'Integrates a FLOW3 package in TYPO3 v4. This Extension requires a running FLOW3 and at least PHP 5.3alpha3.',
 	'category' => 'misc',
 	'shy' => 0,
-	'version' => '0.1.0',
-	'state' => 'alpha',
+	'version' => '0.0.3',
+	'state' => 'experimental',
 	'dependencies' => '',
 	'conflicts' => '',
 	'priority' => '',
@@ -31,8 +31,8 @@ $EM_CONF[$_EXTKEY] = array(
 	'CGLcompliance_note' => '',
 	'constraints' => array(
 		'depends' => array(
-			'php' => '5.3.0apha-5.9.9',
-			'typo3' => '4.0.0-4.9.9',
+			'php' => '5.3.0alpha3-5.9.9',
+			'typo3' => '4.2.0-4.9.9',
 		),
 		'conflicts' => array(
 		),

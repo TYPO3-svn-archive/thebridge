@@ -34,9 +34,9 @@ class tx_thebridge_dispatcher {
 	/**
 	 * A reference to the component factory
 	 *
-	 * @var F3::FLOW3::Component::FactoryInterface
+	 * @var \F3\FLOW3\Component\FactoryInterface
 	 */
-	protected $componentFactory;
+	protected $objectFactory;
 
 	/**
 	 * This method is called by the TYPO3 v4 Framework. It initializes the FLOW3 framework
@@ -49,7 +49,7 @@ class tx_thebridge_dispatcher {
 		$extConfArray = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['thebridge']);
 		require_once(realpath(PATH_site . '../') . '/' . $extConfArray['pathToFlow3']);
 
-		if ($GLOBALS['FLOW3'] instanceof F3::FLOW3) {
+		if ($GLOBALS['FLOW3'] instanceof \F3\FLOW3) {
 			$this->framework = $GLOBALS['FLOW3'];
 		} else {
 			$context = isset($setup['context']) ? $setup['context'] : NULL;				
@@ -58,18 +58,19 @@ class tx_thebridge_dispatcher {
 			$environment['GET'] = $_GET;
 			$environment['POST'] = $_POST;
 			$environment['SERVER'] = $_SERVER;
-			$this->framework = new F3::FLOW3($context);
+			$this->framework = new \F3\FLOW3($context);
 			$this->framework->initialize();
 			$GLOBALS['FLOW3'] = $this->framework;
 			$_GET = $environment['GET'];
 			$_POST = $environment['POST'];
 			$_SERVER = $environment['SERVER'];
 		}
-		if (!$this->framework instanceof F3::FLOW3) throw new Exception('FLOW3 could not be initialized. Maybe you have to set the correct path in the Extension Manager first. The current path (relative to your web pages root folder) is "' . $extConfArray['pathToFlow3'] . '"');
+		if (!$this->framework instanceof \F3\FLOW3) throw new Exception('FLOW3 could not be initialized. Maybe you have to set the correct path in the Extension Manager first. The current path (relative to your web pages root folder) is "' . $extConfArray['pathToFlow3'] . '"');
 
 
-		$this->componentFactory = $this->framework->getComponentManager()->getComponentFactory();		
-		$request = $this->componentFactory->getComponent('F3::FLOW3::MVC::Web::RequestBuilder')->build();
+		$this->objectManager = $this->framework->getObjectManager();		
+		$this->objectFactory = $this->objectManager->getObjectFactory();		
+		$request = $this->objectManager->getObject('F3\FLOW3\MVC\Web\RequestBuilder')->build();
 		$request->setArgument('content', $content);
 		if (!$GLOBALS['TSFE']->siteScript || substr($GLOBALS['TSFE']->siteScript, 0, 9) == 'index.php' || substr($GLOBALS['TSFE']->siteScript, 0, 1) == '?') {
 			if (!is_array($this->cObj->data['pi_flexform']) && $this->cObj->data['pi_flexform'])	{
@@ -81,27 +82,27 @@ class tx_thebridge_dispatcher {
 			$packageKey = isset($setup['plugins.'][$plugin . '.']['package']) ? $setup['plugins.'][$plugin . '.']['package'] : NULL;
 			$controllerName = isset($setup['plugins.'][$plugin . '.']['controller']) ? $setup['plugins.'][$plugin . '.']['controller'] : NULL;
 			$actionName = isset($setup['plugins.'][$plugin . '.']['action']) ? $setup['plugins.'][$plugin . '.']['action'] : NULL;
-			if ($controllerComponentNamePattern !== NULL) $request->setControllerComponentNamePattern($controllerComponentNamePattern);
+			if ($controllerComponentNamePattern !== NULL) $request->setControllerObjectNamePattern($controllerComponentNamePattern);
 			if ($packageKey !== NULL && $controllerName !== NULL) {
 				$request->setControllerPackageKey($packageKey);
 				$request->setControllerName($controllerName);
 			}
 			if ($actionName !== NULL) $request->setControllerActionName($actionName);
 		}
-		$router = $this->componentFactory->getComponent('F3::FLOW3::MVC::Web::Routing::Router');
+		$router = $this->objectManager->getObject('F3\FLOW3\MVC\Web\Routing\Router');
 		$router->route($request);
 		
-		$response = $this->componentFactory->getComponent('F3::FLOW3::MVC::Web::Response');
+		$response = $this->objectFactory->create('F3\FLOW3\MVC\Web\Response');
 		$response->setContent($input);
 		
 		// try-catch is required to enable easy redirects and forwardings by the controller classes inside packages
 		try {
-			$controller = $this->componentFactory->getComponent($request->getControllerComponentName());
+			$controller = $this->objectManager->getObject($request->getControllerObjectName());
 			$controller->processRequest($request, $response);
-		} catch (F3::FLOW3::MVC::Exception::StopAction $ignoredException) {
+		} catch (\F3\FLOW3\MVC\Exception\StopAction $ignoredException) {
 		}
 		
-		$this->componentFactory->getComponent('F3::FLOW3::Persistence::Manager')->persistAll();
+		$this->objectManager->getObject('F3\FLOW3\Persistence\Manager')->persistAll();
 		
 		return $response->getContent();
 	}
